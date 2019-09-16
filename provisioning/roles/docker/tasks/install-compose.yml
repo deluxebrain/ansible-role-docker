@@ -1,0 +1,45 @@
+---
+- name: Determine latest compose version
+  block:
+    - name: Get latest version json
+      uri:
+        url: "{{ compose_version_lookup_url }}"
+        return_content: yes
+        status_code: "200"
+      register: compose_version_json
+
+    - name: Process latest version json
+      set_fact:
+        compose_latest_version: >-
+            {{ compose_version_json.json | json_query('name') }}
+
+    - name: Show determined latest compose version
+      debug:
+        var: compose_version
+  when: compose_version | lower == 'latest'
+
+- name: Show compose version to install
+  debug:
+    var: compose_reference
+
+- name: Create temporary download directory
+  tempfile:
+    state: directory
+    suffix: compose
+  register: compose_temp_download_directory
+
+- name: Download compose package
+  get_url:
+    url: "{{ compose_package_url }}"
+    dest: "{{ compose_temp_download_directory.path }}"
+  register: compose_download_path
+
+- name: Copy compose package to destination directory
+  become: true
+  copy:
+    src: "{{ compose_download_path.dest }}"
+    dest: "{{ compose_install_path }}/docker-compose"
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: yes

@@ -1,0 +1,42 @@
+include config.env
+
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help:
+	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)|(^##)' Makefile \
+		| awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' \
+		| sed -e 's/\[32m##/[33m/'
+
+## Vagrant targets
+
+.PHONY: provision
+provision: ## Re-run Vagrant ansible provisioners
+	@vagrant provision --provision-with ansible_local
+
+.PHONY: clean
+clean: ## Teardown working environment
+	@vagrant destroy --force
+	@vboxmanage list runningvms \
+	| grep $(APP_NAME) \
+	| awk '{ print $$2 }' \
+	| xargs -I vmid vboxmanage controlvm vmid poweroff
+	@vboxmanage list vms \
+	| grep $(APP_NAME) \
+	| awk '{ print $$2 }' \
+	| xargs -I vmid vboxmanage unregistervm vmid
+
+## Docker targets
+
+.PHONY: build
+build: ## Build docker container
+	@docker build -t $(APP_NAME) .
+
+.PHONY: run
+run: ## Run docker container
+	docker run -i -t --rm --name=$(APP_NAME) $(APP_NAME)
+
+.PHONY: stop
+stop: ## Stop and tear down docker container
+	@docker stop $(APP_NAME)
+	@docker rm $(APP_NAME)

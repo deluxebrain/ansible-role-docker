@@ -1,0 +1,44 @@
+---
+- name: Determine latest stable kubectl version
+  block:
+    - name: Get kubectl stable version raw string
+      uri:
+        url: "{{ kubectl_stable_version_lookup_url }}"
+        return_content: yes
+        status_code: "200"
+      register: kubectl_stable_version_raw
+
+    - name: Process kubectl stable version string
+      set_fact:
+        kubectl_stable_version: "{{ kubectl_stable_version_raw.content | trim }}"
+
+    - name: Show determined kubectl stable version
+      debug:
+        var: kubectl_stable_version
+  when: kubectl_version | lower == 'latest'
+
+- name: Show kubectl version to install
+  debug:
+    var: kubectl_install_version
+
+- name: Create temporary download directory
+  tempfile:
+    state: directory
+    suffix: kubectl
+  register: kubectl_temp_download_directory
+
+- name: Download kubectl package
+  get_url:
+    url: "{{ kubectl_repo }}"
+    dest: "{{ kubectl_temp_download_directory.path }}"
+  register: kubectl_download_path
+
+- name: Copy kubectl to destination directory
+  become: true
+  copy:
+    src: "{{ kubectl_download_path.dest }}"
+    dest: "{{ kubectl_install_path }}/{{ kubectl_download_path.dest | basename }}"
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: yes

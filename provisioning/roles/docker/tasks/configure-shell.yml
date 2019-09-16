@@ -1,0 +1,28 @@
+---
+- name: Set path to .bashrc
+  set_fact:
+    bashrc_path: "{{ ansible_env.HOME }}/.bashrc"
+  when: bashrc_path is undefined
+
+- name: Check .bashrc file exists
+  stat:
+    path: "{{ bashrc_path }}"
+  register: bashrc_path_stat
+
+- name: Configure docker
+  block:
+  - name: Create .dockerrc file
+    template:
+      src: .dockerrc.j2
+      dest: "{{ ansible_env.HOME }}/.dockerrc"
+      mode: "0644"
+
+  - name: Configure docker in .dockerrc
+    blockinfile:
+      dest: "{{ bashrc_path }}"
+      marker: "# {mark} ANSIBLE MANAGED BLOCK: docker"
+      block: |
+        if [ -f "$HOME/.dockerrc" ]; then
+          source "$HOME/.dockerrc"
+        fi
+  when: bashrc_path_stat.stat.exists

@@ -1,0 +1,15 @@
+---
+docker_version: latest
+docker_users: []
+
+enable_docker_daemon: yes
+set_docker_host: no
+docker_host: "tcp://localhost:2375"
+
+install_compose: no
+compose_version: latest # 1.24.0
+compose_install_path: /usr/local/bin
+
+install_kubectl: yes
+kubectl_version: latest
+kubectl_install_path: /usr/local/bin

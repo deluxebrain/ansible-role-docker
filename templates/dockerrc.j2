@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+{% if docker_host is defined and docker_host | length > 0 %}
+export DOCKER_HOST="{{ docker_host }}"
+{% endif %}

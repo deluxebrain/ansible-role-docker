@@ -1,0 +1,29 @@
+---
+- name: Add users to docker group
+  become: yes
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  with_items: "{{ docker_users }}"
+  when: docker_users | length > 0
+
+- name: Configure docker daemon startup
+  block:
+  - name: Enable docker on system startup
+    become: yes
+    systemd:
+      name: docker
+      enabled: true
+    notify:
+      - restart docker
+    when: enable_docker_daemon | bool
+
+  - name: Disable docker from system startup
+    become: yes
+    systemd:
+      name: docker
+      enabled: false
+    notify:
+      - stop docker
+    when: not enable_docker_daemon | bool

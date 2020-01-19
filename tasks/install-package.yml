@@ -1,0 +1,47 @@
+---
+- name: Get {{ item.name }} latest version
+  block:
+    - name: Get latest version json
+      uri:
+        url: "{{ item.version_lookup_url }}"
+        return_content: yes
+        status_code: 200
+      register: version_lookup_response
+
+    - name: Process latest version json
+      set_fact:
+        latest_version: >-
+          {{ package_version_processors[item.name].version_processor }}
+  when: item.version | lower == 'latest'
+
+- name: Form {{ item.name }} version
+  set_fact:
+    resolved_version: >-
+      {{ (item.version | lower == 'latest') | ternary(latest_version, item.version) }}
+
+- name: Debug {{ item.name }} version
+  debug:
+    msg: "Version of {{ item.name }} to install: {{ resolved_version }}"
+
+- name: Create temporary download directory
+  tempfile:
+    state: directory
+    suffix: "{{ item.name }}"
+  register: download_directory
+
+- name: Download {{ item.name }} package
+  get_url:
+    url: >-
+      {{ package_url_processors[item.name].package_url }}
+    dest: "{{ download_directory.path }}"
+  register: download_path
+
+- name: Copy {{ item.name }} package to destination directory
+  become: true
+  copy:
+    src: "{{ download_path.dest }}"
+    dest: "{{ item.install_path }}/{{ download_path.dest | basename }}"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: yes

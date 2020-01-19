@@ -1,0 +1,5 @@
+---
+- name: foo
+  set_fact:
+    latest_version: >-
+      {{ version_lookup_response.json | json_query('name') }}

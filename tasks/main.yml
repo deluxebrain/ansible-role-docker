@@ -25,10 +25,9 @@
 
 - include_tasks: configure-docker.yml
 
-- include_tasks: install-compose.yml
-  when: install_compose | bool
-
-- include_tasks: install-kubectl.yml
-  when: install_kubectl | bool
+- name: Install package {{ item.name }}
+  include: install-package.yml
+  with_items: "{{ packages }}"
+  when: packages | length > 0 and item.install | bool
 
 - include_tasks: configure-shell.yml

@@ -2,9 +2,9 @@
 docker_version: latest
 docker_users: []
 enable_docker_daemon: yes
-docker_host: # "tcp://localhost:2375"
+docker_host: ""
 
-install_compose: no
+install_compose: yes
 compose_version: latest
 
 install_kubectl: yes

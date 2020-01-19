@@ -5,8 +5,7 @@ VENV := $(VENV_NAME)/.timestamp
 VENV_ACTIVATE :=. $(VENV_NAME)/bin/activate
 SITE_PACKAGES := $(shell test -d $(VENV_NAME) && $(VENV_ACTIVATE); \
 	pip3 show pip | grep ^Location | cut -d':' -f2)
-DISTROS := ubuntu_18.04 \
-	ubuntu_19.04
+DISTROS := ubuntu1804
 TEST_TARGETS := $(addprefix test-,$(DISTROS))
 RUN_TARGETS := $(addprefix run-,$(DISTROS))
 RUN := .run_timestamp
@@ -19,7 +18,8 @@ $(VENV):
 install: venv $(SITE_PACKAGES)
 $(SITE_PACKAGES): requirements.txt
 	$(VENV_ACTIVATE); \
-	pip3 install -r requirements.txt
+	pip3 install -r requirements.txt; \
+	touch $@
 
 lint:
 	yamllint .
@@ -29,7 +29,7 @@ converge: install
 	$(VENV_ACTIVATE); \
 	molecule converge
 
-run: $(RUN)
+run: install $(RUN)
 $(RUN):
 	$(VENV_ACTIVATE); \
 	molecule converge
@@ -55,6 +55,10 @@ $(TEST_TARGETS): export MOLECULE_DISTRO = $(subst _,:,$(subst test-,,$@))
 $(TEST_TARGETS):
 	$(VENV_ACTIVATE); \
 	molecule test
+
+freeze: venv
+	$(VENV_ACTIVATE); \
+	pip freeze > requirements.txt
 
 clean: install
 	$(VENV_ACTIVATE); \

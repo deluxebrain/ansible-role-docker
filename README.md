@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/deluxebrain/ansible-role-nodejs.svg?branch=master)](https://travis-ci.org/deluxebrain/ansible-role-nodejs)
 
+docker_host: # "tcp://localhost:2375"
+
 NodeJS installer for Linux.
 Includes node-build and nodenv-vars plugins by default for installing Node.js versions and per-project environment variables respectively.
 

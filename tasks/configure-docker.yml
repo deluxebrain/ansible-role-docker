@@ -16,7 +16,7 @@
       name: docker
       enabled: true
     notify:
-      - restart docker
+      - docker daemon enabled
     when: enable_docker_daemon | bool
 
   - name: Disable docker from system startup
@@ -25,5 +25,5 @@
       name: docker
       enabled: false
     notify:
-      - stop docker
+      - docker daemon disabled
     when: not enable_docker_daemon | bool

@@ -6,31 +6,25 @@ packages:
     install: "{{ install_compose }}"
     version: "{{ compose_version }}"
     version_lookup_url: https://api.github.com/repos/docker/compose/releases/latest
-    install_path: /usr/local/bin
+    install_path: /usr/local/bin/docker-compose
 
   - name: kubectl
     install: "{{ install_kubectl }}"
     version: >-
       {{ (kubectl_version | lower == 'latest') | ternary('latest', 'v' + kubectl_version) }}
     version_lookup_url: https://storage.googleapis.com/kubernetes-release/release/stable.txt
-    install_path: /usr/local/bin
+    install_path: /usr/local/bin/kubectl
 
-package_version_processors:
-  compose:
-    version_processor: >-
+compose_version_processor: >-
       {{ version_lookup_response.json | json_query('name') }}
-  kubectl:
-    version_processor: >-
-      {{ version_lookup_response.content | trim }}
-
-package_url_processors:
-  compose:
-    package_url: "https://github.com/docker/compose/releases/download/\
+compose_package_url: "https://github.com/docker/compose/releases/download/\
       {{ resolved_version }}/\
       docker-compose-{{ ansible_system }}-\
       {{ ansible_architecture }}"
-  kubectl:
-    package_url: "https://storage.googleapis.com/kubernetes-release/release/\
+
+kubectl_version_processor: >-
+      {{ version_lookup_response.content | trim }}
+kubectl_package_url: "https://storage.googleapis.com/kubernetes-release/release/\
       {{ resolved_version }}/\
       bin/\
       {{ ansible_system | lower }}/\

@@ -11,7 +11,7 @@
     - name: Process latest version json
       set_fact:
         latest_version: >-
-          {{ package_version_processors[item.name].version_processor }}
+          {{ lookup('vars', '{{ item.name }}_version_processor') }}
   when: item.version | lower == 'latest'
 
 - name: Form {{ item.name }} version
@@ -31,8 +31,7 @@
 
 - name: Download {{ item.name }} package
   get_url:
-    url: >-
-      {{ package_url_processors[item.name].package_url }}
+    url: "{{ lookup('vars', '{{ item.name }}_package_url') }}"
     dest: "{{ download_directory.path }}"
   register: download_path
 
@@ -40,7 +39,7 @@
   become: true
   copy:
     src: "{{ download_path.dest }}"
-    dest: "{{ item.install_path }}/{{ download_path.dest | basename }}"
+    dest: "{{ item.install_path }}"
     owner: root
     group: root
     mode: 0755

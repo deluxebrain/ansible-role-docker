@@ -4,9 +4,12 @@ platform_architecture: "{{ (ansible_architecture == 'x86_64') | ternary('amd64',
 packages:
   - name: compose
     install: "{{ install_compose }}"
-    version: "{{ compose_version }}"
+    version: >-
+      {{ (compose_version | lower == 'latest') | ternary('latest', 'v' + compose_version) }}
     version_lookup_url: https://api.github.com/repos/docker/compose/releases/latest
     install_path: /usr/local/bin/docker-compose
+    version_extractor: >-
+      version --short
 
   - name: kubectl
     install: "{{ install_kubectl }}"
@@ -14,15 +17,17 @@ packages:
       {{ (kubectl_version | lower == 'latest') | ternary('latest', 'v' + kubectl_version) }}
     version_lookup_url: https://storage.googleapis.com/kubernetes-release/release/stable.txt
     install_path: /usr/local/bin/kubectl
+    version_extractor: >-
+      version --client --short | sed -E 's/.*v([0-9\.]+).*/\1/'
 
-compose_version_processor: >-
+compose_response_processor: >-
       {{ version_lookup_response.json | json_query('name') }}
 compose_package_url: "https://github.com/docker/compose/releases/download/\
       {{ resolved_version }}/\
       docker-compose-{{ ansible_system }}-\
       {{ ansible_architecture }}"
 
-kubectl_version_processor: >-
+kubectl_response_processor: >-
       {{ version_lookup_response.content | trim }}
 kubectl_package_url: "https://storage.googleapis.com/kubernetes-release/release/\
       {{ resolved_version }}/\

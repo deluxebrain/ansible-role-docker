@@ -7,8 +7,6 @@ system_dependencies:
   - software-properties-common
 
 docker:
-  version: "{{ (docker_version | lower == 'latest') \
-    | ternary('', '=' + docker_version + '*') }}"
   package_name: "docker-ce{{ (docker_version | lower == 'latest') \
     | ternary('', '=' + docker_version + '*') }}"
   legacy_packages:

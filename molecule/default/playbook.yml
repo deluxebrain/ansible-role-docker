@@ -3,3 +3,8 @@
   hosts: all
   roles:
     - role: ansible-role-docker
+      docker_version: 5:19.03.5*
+      docker_users:
+        - root
+      compose_version: 1.25.2
+      kubectl_version: 1.17.2

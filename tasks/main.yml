@@ -25,7 +25,7 @@
 
 - include_tasks: configure-docker.yml
 
-- name: Install package {{ item.name }}
+- name: Install package
   include: install-package.yml
   with_items: "{{ packages }}"
   when: packages | length > 0 and item.install | bool

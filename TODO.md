@@ -2,5 +2,5 @@
 
 - reconcile makefile across all roles
 - own the docker image with systemd support ?
-- get rid of all raw
-- 18/19
+- 1904 Ubuntu Docker image with Systemd support
+- get rid of all raw across all ansible roles

@@ -9,7 +9,6 @@ services:
 env:
   matrix:
     - MOLECULE_DISTRO=ubuntu1804
-    - MOLECULE_DISTRO=ubuntu1904
 
 install:
   pip install molecule docker

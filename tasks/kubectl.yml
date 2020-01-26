@@ -1,5 +1,0 @@
----
-- name: foo
-  set_fact:
-    latest_version: >-
-      {{ version_lookup_response.content | trim }}

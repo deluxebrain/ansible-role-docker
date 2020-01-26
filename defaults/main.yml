@@ -4,8 +4,14 @@ docker_users: []
 enable_docker_daemon: yes
 docker_host: ""
 
-install_compose: yes
-compose_version: latest
+install_docker_compose: yes
+docker_compose_version: latest
+docker_compose_install_dir: ""
 
 install_kubectl: yes
 kubectl_version: latest
+kubectl_install_dir: ""
+
+install_kubectx: yes
+kubectx_version: latest
+kubectx_install_path: ""

@@ -3,7 +3,12 @@
 [![Build Status](https://travis-ci.org/deluxebrain/ansible-role-docker.svg?branch=master)](https://travis-ci.org/deluxebrain/ansible-role-docker)
 
 Docker installer for Linux, with control over docker daemon startup.
-Optionally installs docker compose and kubectl.
+Optionally installs the following packages:
+
+- docker compose
+- kubectl
+- kubectx ( dependent on kubectl )
+- kubens ( installed with kubectx )
 
 ## Requirements
 
@@ -23,14 +28,24 @@ Individual variables can be set or overridden by setting them in a playbook for 
   - set to `no` to run docker as a client
 - `docker_host`: ( default: "" )
   - use in conjuction with `enable_docker_daemon` to point docker client at a docker host
-- `install_compose`: ( default: yes )
+- `install_docker_compose`: ( default: yes )
   - install docker compose
-- `compose_version`: ( default: latest )
+- `docker_compose_version`: ( default: latest )
   - version of docker compose to install
+- `docker_compose_install_dir`: ( default: /usr/local/bin )
+  - docker compose install dir
 - `install_kubectl`: ( default: yes )
   - install kubectl
 - `kubectl_version`: ( default: latest )
   - version of kubectl to install
+- `kubectl_install_dir`: ( default: /usr/local/bin )
+  - kubectl install dir
+- `install_kubectx`: ( default: yes )
+  - install kubectx and kubens
+- `kubectx_version`: ( default: latest )
+  - version of kubectx and kubens to install
+- `kubectx_install_path`: ( default : /usr/local/bin/kubectx )
+  - kubectx and kubens install path
 
 ## Dependencies
 

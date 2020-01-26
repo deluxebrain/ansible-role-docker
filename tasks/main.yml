@@ -25,9 +25,13 @@
 
 - include_tasks: configure-docker.yml
 
-- name: Install package
+- name: Install packages
   include: install-package.yml
   with_items: "{{ packages }}"
   when: packages | length > 0 and item.install | bool
+
+- name: Install kubectx
+  include: install-kubectx.yml
+  when: install_kubectx | bool and install_kubectl | bool
 
 - include_tasks: configure-shell.yml

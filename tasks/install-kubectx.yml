@@ -1,0 +1,16 @@
+---
+- name: Debug kubectx version
+  debug:
+    msg: "Version of kubectx to install: {{ kubectx.version }}"
+
+- name: Install kubectx
+  git:
+    repo: "{{ kubectx.repo }}"
+    dest: "{{ kubectx.install_path }}"
+    version: "{{ kubectx.version }}"
+
+- name: Add kubectx to system-wide $PATH
+  copy:
+    dest: /etc/profile.d/kubectx-path.sh
+    content: "PATH=$PATH:{{ kubectx.install_path }}"
+    mode: 0644

@@ -1,37 +1,48 @@
 ---
 platform_architecture: "{{ (ansible_architecture == 'x86_64') | ternary('amd64', '386') }}"
 
+kubectx:
+  repo: https://github.com/ahmetb/kubectx.git
+  version: >-
+    {{ (kubectx_version == 'latest') | ternary('HEAD', 'v' + kubectx_version) }}
+  install_path: "{{ (kubectx_install_path is defined and kubectx_install_path | length > 0) |\
+    ternary(kubectx_install_path, '/usr/local/bin/kubectx') }}"
+
 packages:
-  - name: compose
-    install: "{{ install_compose }}"
+  - name: docker_compose
+    package_name: docker-compose
+    install: "{{ install_docker_compose }}"
     version: >-
-      {{ (compose_version | lower == 'latest') | ternary('latest', 'v' + compose_version) }}
+      {{ (docker_compose_version | lower == 'latest') | ternary('latest', 'v' + docker_compose_version) }}
     version_lookup_url: https://api.github.com/repos/docker/compose/releases/latest
-    install_path: /usr/local/bin/docker-compose
-    version_extractor: >-
-      version --short
+    install_dir: "{{ (docker_compose_install_dir is defined and docker_compose_install_dir | length > 0) |\
+      ternary(docker_compose_install_dir, '/usr/local/bin') }}"
+    version_extractor: "docker-compose version --short"
+    unarchive: no
 
   - name: kubectl
     install: "{{ install_kubectl }}"
     version: >-
       {{ (kubectl_version | lower == 'latest') | ternary('latest', 'v' + kubectl_version) }}
     version_lookup_url: https://storage.googleapis.com/kubernetes-release/release/stable.txt
-    install_path: /usr/local/bin/kubectl
+    install_dir: "{{ (kubectl_install_dir is defined and kubectl_install_dir | length > 0) |\
+      ternary(kubectl_install_dir, '/usr/local/bin') }}"
     version_extractor: >-
-      version --client --short | sed -E 's/.*v([0-9\.]+).*/\1/'
+      kubectl version --client --short | sed -E 's/.*v([0-9\.]+).*/\1/'
+    unarchive: no
 
-compose_response_processor: >-
-      {{ version_lookup_response.json | json_query('name') }}
-compose_package_url: "https://github.com/docker/compose/releases/download/\
-      {{ resolved_version }}/\
-      docker-compose-{{ ansible_system }}-\
-      {{ ansible_architecture }}"
+docker_compose_response_processor: >-
+  {{ version_lookup_response.json | json_query('tag_name') }}
+docker_compose_package_url: "https://github.com/docker/compose/releases/download/\
+  {{ resolved_version }}/\
+  docker-compose-{{ ansible_system }}-\
+  {{ ansible_architecture }}"
 
 kubectl_response_processor: >-
-      {{ version_lookup_response.content | trim }}
+  {{ version_lookup_response.content | trim }}
 kubectl_package_url: "https://storage.googleapis.com/kubernetes-release/release/\
-      {{ resolved_version }}/\
-      bin/\
-      {{ ansible_system | lower }}/\
-      {{ platform_architecture }}/\
-      kubectl"
+  {{ resolved_version }}/\
+  bin/\
+  {{ ansible_system | lower }}/\
+  {{ platform_architecture }}/\
+  kubectl"

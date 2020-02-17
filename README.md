@@ -72,11 +72,31 @@ Example below for the following:
         kubectl_version: 1.17.2
 ```
 
-Note that docker is installed using the `docker-ce` `apt` package.
+## Notes
+
+### Docker and apt
+
+Docker is installed using the `docker-ce` `apt` package.
 The following `apt` command can be used to list all available versions:
 
 ```sh
 apt-cache madison docker-ce
+```
+
+### Docker and /etc/profile
+
+The path for kubectx is setup in `/etc/profile`.
+Docker by default connects to containers using an interactive non-login shell, and hence by default
+`/etc/profile` and hence the path for kubectx will not be set.
+
+The following demonstrates the use of `kubectx` with docker:
+
+```sh
+docker ps
+$ instance
+
+docker exec -it instance bash --login
+$ root@instance:/#
 ```
 
 ## License

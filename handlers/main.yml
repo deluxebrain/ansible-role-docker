@@ -1,12 +1,12 @@
 ---
-- name: docker daemon enabled
+- name: restart docker daemon
   become: true
   systemd:
     name: docker
     state: restarted
     daemon_reload: true
 
-- name: docker daemon disabled
+- name: stop docker daemon
   become: true
   systemd:
     name: docker

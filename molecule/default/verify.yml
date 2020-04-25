@@ -1,0 +1,67 @@
+---
+- name: Verify
+  hosts: all
+
+  # Note: Role variables are not available during molecule test
+  # Therefore must redeclare here
+
+  tasks:
+    - name: "Verify docker is installed"
+      shell: "docker version --format {% raw %}'{{ .Server.Version }}'{% endraw %}"   # noqa 305
+      register: docker_version_command
+
+    - assert:
+        that: "docker_version_command.rc == 0"
+        fail_msg: "docker is not installed"
+        success_msg: "docker is installed"
+
+    - assert:
+        that: "'19.03' in docker_version_command.stdout"
+        fail_msg: "docker 19.03 is not installed"
+        success_msg: "docker 19.03 is installed"
+
+    - name: "Verify docker compose is installed"
+      shell: docker-compose version --short   # noqa 305
+      register: docker_compose_version_command
+
+    - assert:
+        that: "docker_compose_version_command.rc == 0"
+        fail_msg: "docker compose is not installed"
+        success_msg: "docker compose is installed"
+
+    - assert:
+        that: "'1.25.5' in docker_compose_version_command.stdout"
+        fail_msg: "docker compose 1.25.5 is not installed"
+        success_msg: "docker compose 1.25.5 is installed"
+
+    - name: "Verify kubectl is installed"
+      shell: kubectl version --client --short # noqa 305
+      register: kubectl_version_command
+
+    - assert:
+        that: "kubectl_version_command.rc == 0"
+        fail_msg: "kubectl is not installed"
+        success_msg: "kubectl is installed"
+
+    - assert:
+        that: "'1.18.2' in kubectl_version_command.stdout"
+        fail_msg: "kubectl 1.25.5 is not installed"
+        success_msg: "kubectl 1.25.5 is installed"
+
+    - name: "Verify kubectx is installed"
+      shell: . /etc/profile && which kubectx  # noqa 305
+      register: kubectx_version_command
+
+    - assert:
+        that: "kubectx_version_command.rc == 0"
+        fail_msg: "kubectx is not installed"
+        success_msg: "kubectx is installed"
+
+    - name: "Verify kubens is installed"
+      shell: . /etc/profile && which kubens   # noqa 305
+      register: kubens_version_command
+
+    - assert:
+        that: "kubens_version_command.rc == 0"
+        fail_msg: "kubens is not installed"
+        success_msg: "kubens is installed"

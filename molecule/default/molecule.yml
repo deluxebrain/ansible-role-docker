@@ -1,10 +1,15 @@
 ---
 dependency:
   name: galaxy
+
 driver:
   name: docker
-lint:
-  name: yamllint
+
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+
 platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu1804}-ansible:latest"
@@ -13,11 +18,9 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: True
     pre_build_image: True
+
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
+
 verifier:
-  name: testinfra
-  lint:
-    name: flake8
+  name: ansible

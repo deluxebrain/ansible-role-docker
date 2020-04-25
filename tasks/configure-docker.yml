@@ -8,7 +8,7 @@
   with_items: "{{ docker_users }}"
   when: docker_users | length > 0
 
-- name: Configure docker daemon startup
+- name: Enable docker daemon startup
   block:
   - name: Enable docker on system startup
     become: yes
@@ -16,14 +16,28 @@
       name: docker
       enabled: true
     notify:
-      - docker daemon enabled
-    when: enable_docker_daemon | bool
+      - restart docker daemon
 
+  - name: Ensure docker daemon is running
+    become: yes
+    service:
+      name: docker
+      state: started
+  when: enable_docker_daemon | bool
+
+- name: Disable docker daemon startup
+  block:
   - name: Disable docker from system startup
     become: yes
     systemd:
       name: docker
       enabled: false
     notify:
-      - docker daemon disabled
-    when: not enable_docker_daemon | bool
+      - stop docker daemon
+
+  - name: Ensure docker daemon is stopped
+    become: yes
+    service:
+      name: docker
+      state: stopped
+  when: not enable_docker_daemon | bool

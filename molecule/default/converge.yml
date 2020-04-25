@@ -1,0 +1,24 @@
+---
+- name: Converge
+  hosts: all
+
+  pre_tasks:
+    - name: "Update apt cache"
+      apt: update_cache=true cache_valid_time=600
+      when: ansible_os_family | lower == 'debian'
+
+  tasks:
+    - name: "Include ansible-role-docker"
+      include_role:
+        name: "ansible-role-docker"
+      vars:
+        docker_version: "5:19.03.8*"
+        enable_docker_daemon: yes
+        docker_users:
+          - root
+        install_compose: yes
+        compose_version: "1.25.5"
+        install_kubectl: yes
+        kubectl_version: "1.18.2"
+        install_kubectx: yes
+        kubectx_version: "latest"
